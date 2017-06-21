@@ -149,12 +149,11 @@
 	    // c-0が数字、c-1が.だったら数値の箇条書き
 	    var c1 = line.querySelector('.c-1');
 	    var c2 = line.querySelector('.c-2');
+	    liStyle = '- '
 	    if (c1 !== null && c2 !== null) {
 		if (isFinite(c1.textContent) && c2.textContent === '.') {
 		    liStyle = ''
 		}
-	    } else {
-		liStyle = '- '
 	    }
 
 	    if (text !== " ") {
