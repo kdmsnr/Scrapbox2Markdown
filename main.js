@@ -96,6 +96,7 @@
 
     lines = lines.querySelectorAll('.line');
     pageTexts = [];
+    isInsideCodeblock = false;
     for (var i = 1; i < lines.length; i++) {
         var line = lines[i].querySelector('.text').cloneNode(true);
 
@@ -113,13 +114,29 @@
             e.innerText = '`';
         }
 
-        var html = line.innerHTML.replace(/<span>/g, '');
+        var html = line.innerHTML;
+	html = html.replace(/<span>/g, '');
         html = html.replace(/<span.+?>/g, '').replace(/<\/span>/g, '');
         html = html.replace(/<br.+?>/g, '');
         var text = html.replace(/\n/gi, '').replace(/\t/gi, '').trim();
 
         text = headline(text);
         text = links(text);
+
+	// codeblock
+	if (line.classList.contains('code-block')) {
+	    if (!isInsideCodeblock) {
+		text = "```\n" + text;
+		isInsideCodeblock = true;
+	    }
+	    pageTexts.push(text);
+	    continue;
+	} else { // reset
+	    if (isInsideCodeblock) {
+		isInsideCodeblock = false;
+		text = "```\n\n" + text;
+	    }
+	}
 
         // 箇条書き対応
         var liDot = line.querySelector('.indent-mark');
@@ -130,17 +147,27 @@
 
 	    var liStyle = '';
 	    // c-0が数字、c-1が.だったら数値の箇条書き
-	    var c1 = line.querySelector('.c-1').textContent;
-	    var c2 = line.querySelector('.c-2').textContent;
-	    if (isFinite(c1) && c2 === '.') {
-		liStyle = ''
+	    var c1 = line.querySelector('.c-1');
+	    var c2 = line.querySelector('.c-2');
+	    if (c1 !== null && c2 !== null) {
+		if (isFinite(c1.textContent) && c2.textContent === '.') {
+		    liStyle = ''
+		}
 	    } else {
 		liStyle = '- '
 	    }
-	    text = markdownIndent(indentLevel) + liStyle + text;
+
+	    if (text !== " ") {
+		text = markdownIndent(indentLevel) + liStyle + text;
+	    }
         }
 
         pageTexts.push(text);
+    }
+
+    // the last codeblock
+    if (isInsideCodeblock) {
+        pageTexts.push("```\n\n");
     }
 
     writer(pageTitle, pageTexts);
