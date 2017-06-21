@@ -46,7 +46,7 @@
     // 1 <= level <= MAX_LEVEL
     // (MAX_LEVEL + 1) - level: 「#」の数
     var headlineMark = (level=1) => {
-        var MAX_LEVEL = 5;
+        var MAX_LEVEL = 3;
         var numMarks = (MAX_LEVEL + 1) - level;
         var r = '';
         for (var i = 0; i < numMarks; i++) {
@@ -127,10 +127,17 @@
             // 箇条書きの入れ子構造を取得
             var width = +((liDot.style.width).split('em')[0]);
             var indentLevel = width / indentUnitWidthEm;
-            text = markdownIndent(indentLevel) + '- ' + text;
-        }
-        if (liDot === null && text.length > 0 && text[0] !== '#') {
-            text += '<br>'
+
+	    var liStyle = '';
+	    // c-0が数字、c-1が.だったら数値の箇条書き
+	    var c1 = line.querySelector('.c-1').textContent;
+	    var c2 = line.querySelector('.c-2').textContent;
+	    if (isFinite(c1) && c2 === '.') {
+		liStyle = ''
+	    } else {
+		liStyle = '- '
+	    }
+	    text = markdownIndent(indentLevel) + liStyle + text;
         }
 
         pageTexts.push(text);
