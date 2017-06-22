@@ -115,7 +115,7 @@
         }
 
         var html = line.innerHTML;
-	html = html.replace(/<span>/g, '');
+        html = html.replace(/<span>/g, '');
         html = html.replace(/<span.+?>/g, '').replace(/<\/span>/g, '');
         html = html.replace(/<br.+?>/g, '');
         var text = html.replace(/\n/gi, '').replace(/\t/gi, '').trim();
@@ -123,20 +123,20 @@
         text = headline(text);
         text = links(text);
 
-	// codeblock
-	if (line.classList.contains('code-block')) {
-	    if (!isInsideCodeblock) {
-		text = "```\n" + text;
-		isInsideCodeblock = true;
-	    }
-	    pageTexts.push(text);
-	    continue;
-	} else { // reset
-	    if (isInsideCodeblock) {
-		isInsideCodeblock = false;
-		text = "```\n\n" + text;
-	    }
-	}
+        // codeblock
+        if (line.classList.contains('code-block')) {
+            if (!isInsideCodeblock) {
+                text = "```\n" + text;
+                isInsideCodeblock = true;
+            }
+            pageTexts.push(text);
+            continue;
+        } else { // reset
+            if (isInsideCodeblock) {
+                isInsideCodeblock = false;
+                text = "```\n\n" + text;
+            }
+        }
 
         // 箇条書き対応
         var liDot = line.querySelector('.indent-mark');
@@ -145,20 +145,20 @@
             var width = +((liDot.style.width).split('em')[0]);
             var indentLevel = width / indentUnitWidthEm;
 
-	    var liStyle = '';
-	    // c-0が数字、c-1が.だったら数値の箇条書き
-	    var c1 = line.querySelector('.c-1');
-	    var c2 = line.querySelector('.c-2');
-	    liStyle = '- '
-	    if (c1 !== null && c2 !== null) {
-		if (isFinite(c1.textContent) && c2.textContent === '.') {
-		    liStyle = ''
-		}
-	    }
+            var liStyle = '';
+            // c-0が数字、c-1が.だったら数値の箇条書き
+            var c1 = line.querySelector('.c-1');
+            var c2 = line.querySelector('.c-2');
+            liStyle = '- '
+            if (c1 !== null && c2 !== null) {
+                if (isFinite(c1.textContent) && c2.textContent === '.') {
+                    liStyle = ''
+                }
+            }
 
-	    if (text !== " ") {
-		text = markdownIndent(indentLevel) + liStyle + text;
-	    }
+            if (text !== " ") {
+                text = markdownIndent(indentLevel) + liStyle + text;
+            }
         }
 
         pageTexts.push(text);
